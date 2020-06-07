@@ -17,12 +17,20 @@ return [
     \Drengr\Framework\Database::class => function (\Drengr\Framework\Container $container) {
         $wpdb = $container->get('wpdb');
         $container->require('upgrade');
+
+        $option = $container->get(\Drengr\Framework\Option::class);
+
         $config = $container->get('config')->get('database');
 
         return new \Drengr\Framework\Database(
             $config,
             $wpdb,
+            $option
         );
+    },
+
+    \Drengr\Framework\Option::class => function (\Drengr\Framework\Container $container) {
+        return new \Drengr\Framework\Option();
     },
 
     'wpdb' => function (\Drengr\Framework\Container $container) {
