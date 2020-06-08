@@ -3,7 +3,9 @@
 namespace Drengr\App;
 
 use Drengr\Framework\Database;
+use Drengr\Framework\ListingFactory;
 use Drengr\Framework\Plugin;
+use Drengr\Model\Group;
 
 class Admin extends Plugin
 {
@@ -23,11 +25,16 @@ class Admin extends Plugin
             'function' => 'renderGroupList',
         ],
     ];
+    /**
+     * @var ListingFactory
+     */
+    private $listingFactory;
 
-    public function __construct(array $config, Database $database)
+    public function __construct(array $config, Database $database, ListingFactory $listingFactory)
     {
         $this->config = $config;
         $this->database = $database;
+        $this->listingFactory = $listingFactory;
     }
 
     public function register($page = '')
@@ -38,7 +45,7 @@ class Admin extends Plugin
 
     public function activate()
     {
-        $this->database->updateTables();
+        $this->database->updateTablesIfNeeded();
     }
 
     public function registerMenu()
@@ -94,5 +101,8 @@ class Admin extends Plugin
          * list groups
          * add new group
          */
+        $listing = $this->listingFactory->create(Group::class);
+        $listing->prepare_items()
+            ->display();
     }
 }
