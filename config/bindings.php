@@ -1,11 +1,19 @@
 <?php
-return [
-    'admin' => function (\Drengr\Framework\Container $container) {
-        $config = [];
-        $database = $container->get(\Drengr\Framework\Database::class);
-        $listingFactory = $container->get(\Drengr\Framework\ListingFactory::class);
 
-        return new \Drengr\App\Admin(
+use Drengr\App\Admin;
+use Drengr\App\Client;
+use Drengr\Framework\Container;
+use Drengr\Framework\Database;
+use Drengr\Framework\ListingFactory;
+use Drengr\Framework\Option;
+
+return [
+    'admin' => function (Container $container) {
+        $config = [];
+        $database = $container->get(Database::class);
+        $listingFactory = $container->get(ListingFactory::class);
+
+        return new Admin(
             $config,
             $database,
             $listingFactory
@@ -13,42 +21,42 @@ return [
     },
 
     'public' => function ($container) {
-        return new \Drengr\App\Client();
+        return new Client();
     },
 
-    \Drengr\Framework\Database::class => function (\Drengr\Framework\Container $container) {
+    Database::class => function (Container $container) {
         $wpdb = $container->get('wpdb');
         $container->require('upgrade');
 
-        $option = $container->get(\Drengr\Framework\Option::class);
+        $option = $container->get(Option::class);
 
         $config = $container->get('config')->get('database');
 
-        return new \Drengr\Framework\Database(
+        return new Database(
             $config,
             $wpdb,
             $option
         );
     },
 
-    \Drengr\Framework\ListingFactory::class => function (\Drengr\Framework\Container $container) {
+    ListingFactory::class => function (Container $container) {
         $wpdb = $container->get('wpdb');
         $wp_col_headers = $container->get('wp_col_headers');
         $container->require('class-wp-list-table');
 
-        return new \Drengr\Framework\ListingFactory($wpdb, $wp_col_headers);
+        return new ListingFactory($wpdb, $wp_col_headers);
     },
 
-    \Drengr\Framework\Option::class => function (\Drengr\Framework\Container $container) {
-        return new \Drengr\Framework\Option();
+    Option::class => function (Container $container) {
+        return new Option();
     },
 
-    'wpdb' => function (\Drengr\Framework\Container $container) {
+    'wpdb' => function (Container $container) {
         global $wpdb;
         return $wpdb;
     },
 
-    'wp_col_headers' => function (\Drengr\Framework\Container $container) {
+    'wp_col_headers' => function (Container $container) {
         global $_wp_col_headers;
         return $_wp_col_headers;
     }
