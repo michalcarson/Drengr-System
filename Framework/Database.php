@@ -6,19 +6,16 @@ class Database
 {
     const INSTALLEDVERSION = 'installed_db_version';
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $config;
 
+    /** @var \wpdb */
     protected $wpdb;
 
-    /**
-     * @var Option
-     */
+    /** @var Option */
     protected $option;
 
-    public function __construct(array $config, $wpdb, Option $option)
+    public function __construct(array $config, \wpdb $wpdb, Option $option)
     {
         $this->config = $config;
         $this->wpdb = $wpdb;
