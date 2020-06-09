@@ -41,10 +41,9 @@ return [
 
     ListingFactory::class => function (Container $container) {
         $wpdb = $container->get('wpdb');
-        $wp_col_headers = $container->get('wp_col_headers');
         $container->require('class-wp-list-table');
 
-        return new ListingFactory($wpdb, $wp_col_headers);
+        return new ListingFactory($wpdb);
     },
 
     Option::class => function (Container $container) {
@@ -55,9 +54,4 @@ return [
         global $wpdb;
         return $wpdb;
     },
-
-    'wp_col_headers' => function (Container $container) {
-        global $_wp_col_headers;
-        return $_wp_col_headers;
-    }
 ];

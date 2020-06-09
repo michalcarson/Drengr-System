@@ -60,7 +60,9 @@ class Admin extends Plugin
 
         foreach ($this->submenus as $submenu) {
             $parentSlug = isset($submenu['parentSlug']) ? $submenu['parentSlug'] : $this->parentSlug;
-            $menuSlug = isset($submenu['menuSlug']) ? $submenu['menuSlug'] : $this->menuPrefix . '-' . $this->slugify($submenu['pageTitle']);
+            $menuSlug = isset($submenu['menuSlug'])
+                ? $submenu['menuSlug']
+                : sanitize_title_with_dashes($this->menuPrefix . ' ' . $submenu['pageTitle']);
             $menuTitle = isset($submenu['menuTitle']) ? $submenu['menuTitle'] : $submenu['pageTitle'];
             $capability = isset($submenu['capability']) ? $submenu['capability'] : $this->capability;
 
@@ -96,13 +98,11 @@ class Admin extends Plugin
 
     public function renderGroupList()
     {
-        echo '<h2>list groups</h2>';
-        /*
-         * list groups
-         * add new group
-         */
         $listing = $this->listingFactory->create(Group::class);
-        $listing->prepare_items()
+        $listing->pageHeading(Group::PLURAL)
+            ->formTag()
+            ->prepare_items()
             ->display();
+        $listing->endForm();
     }
 }

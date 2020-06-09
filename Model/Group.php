@@ -4,15 +4,8 @@ namespace Drengr\Model;
 
 class Group implements ListableModel
 {
-    public static function getPlural()
-    {
-        return 'Groups';
-    }
-
-    public static function getSingular()
-    {
-        return 'Group';
-    }
+    public const PLURAL = 'Groups';
+    public const SINGULAR = 'Group';
 
     public static function getColumns()
     {
@@ -31,5 +24,10 @@ class Group implements ListableModel
         return [
             'name' => ['name', false]
         ];
+    }
+
+    public static function getQuery($prefix)
+    {
+        return "SELECT * FROM {$prefix}drengr_group";
     }
 }
