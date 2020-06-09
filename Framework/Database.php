@@ -22,6 +22,10 @@ class Database
         $this->option = $option;
     }
 
+    /**
+     * Check the current version (in config) against the installed version (in WP options)
+     * and update the database schema only if needed.
+     */
     public function updateTablesIfNeeded()
     {
         if ($this->config['version'] > $this->option->get(self::INSTALLEDVERSION)) {
@@ -30,6 +34,9 @@ class Database
         }
     }
 
+    /**
+     * Run through all the tables in the configuration file and update all table schemas.
+     */
     public function updateTables()
     {
         $prefix = $this->wpdb->prefix;
