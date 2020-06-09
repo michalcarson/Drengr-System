@@ -8,6 +8,5 @@
  */
 return [
     'Drengr' => '',
-    'Pimple' => 'Pimple' . DIRECTORY_SEPARATOR,
     'Psr' => 'Psr' . DIRECTORY_SEPARATOR,
 ];
