@@ -2,11 +2,12 @@
 
 namespace Drengr\Framework;
 
-use Drengr\Model\Group;
 use Drengr\Model\ListableModel;
 use WP_List_Table;
 
 /*
+ * An adapter or facade for WP_List_Table.
+ *
  * There is a lot of outdated documentation out there for how to use WP_List_Table. The following
  * few may have errors but are still good points of reference.
  * @see https://codex.wordpress.org/Function_Reference/WP_List_Table
@@ -16,11 +17,18 @@ use WP_List_Table;
 
 class Listing extends WP_List_Table
 {
+    const PERPAGE_DEFAULT = 12;
+
     /** @var ListableModel */
     protected $class;
+
     /** @var \wpdb */
     protected $wpdb;
 
+    /**
+     * @param string $class The fully qualified name of a class that implements ListableModel
+     * @param \wpdb $wpdb
+     */
     public function __construct(string $class, \wpdb $wpdb)
     {
         $this->class = $class;
@@ -32,44 +40,44 @@ class Listing extends WP_List_Table
         ]);
     }
 
+    /**
+     * @return array
+     */
     public function get_columns()
     {
         return $this->class::getColumns();
     }
 
+    /**
+     * @return array
+     */
     public function get_sortable_columns()
     {
         return $this->class::getSortableColumns();
     }
 
+    /**
+     * Set up data and pagination parameters for the table.
+     *
+     * <soapbox>
+     * This method has unavoidable side-effects. In order to prepare the parent class to
+     * display the table, we must build the query, set the values needed in the parent's
+     * `_column_headers` variable and set the query data in the parent's `items` variable.
+     * The column header data requires particular structure, so it would be better to have
+     * a method in the parent that created the structure for us.
+     * </soapbox>
+     *
+     * @return $this
+     */
     public function prepare_items()
     {
-        $query = $this->class::getQuery($this->wpdb->prefix);
+        $perPage = $this->getPerPage();
 
-        $orderby = ! empty($_GET['orderby']) ? $_GET['orderby'] : null;
-        if ( ! empty($orderby)) {
-            $order = ! empty($_GET['order']) ? $_GET['order'] : 'ASC';
-            $query .= ' ORDER BY ' . $orderby . ' ' . $order;
-        }
+        $query = $this->class::getQuery($this->wpdb->prefix) . $this->orderByClause();
 
-        $perpage = 5;
-        $paged = ! empty($_GET['paged']) ? $_GET['paged'] : 1;
-        if (empty($paged) || ! is_numeric($paged) || $paged <= 0) {
-            $paged = 1;
-        }
+        $this->setPaginationArgs($query, $perPage);
 
-        $totalitems = $this->wpdb->query($query);
-        $totalpages = ceil($totalitems / $perpage);
-        if ( ! empty($paged) && ! empty($perpage)) {
-            $offset = ($paged - 1) * $perpage;
-            $query .= ' LIMIT ' . $offset . ',' . $perpage;
-        }
-
-        $this->set_pagination_args([
-            'total_items' => $totalitems,
-            'total_pages' => $totalpages,
-            'per_page' => $perpage,
-        ]);
+        $query .= $this->offsetClause($perPage);
 
         $this->_column_headers = [
             $this->get_columns(),
@@ -82,6 +90,75 @@ class Listing extends WP_List_Table
         return $this;
     }
 
+    protected function getPerPage()
+    {
+        //todo: look into $this->get_items_per_page();
+        return self::PERPAGE_DEFAULT;
+    }
+
+    /**
+     * Returns a MySql-compatible ORDER BY clause.
+     *
+     * @return string
+     */
+    protected function orderByClause()
+    {
+        // todo: get the globals out of this method
+        $orderby = ! empty($_GET['orderby']) ? $_GET['orderby'] : null;
+
+        if (empty($orderby)) {
+            return '';
+        }
+
+        $order = ! empty($_GET['order']) ? $_GET['order'] : 'ASC';
+
+        return ' ORDER BY ' . $orderby . ' ' . $order;
+    }
+
+    /**
+     * Returns a MySql-compatible LIMIT clause.
+     *
+     * @param int $perPage
+     * @return string
+     */
+    protected function offsetClause(int $perPage)
+    {
+        if (empty($perPage)) {
+            return '';
+        }
+
+        $pageNum = $this->get_pagenum();
+        $offset = ($pageNum - 1) * $perPage;
+
+        return ' LIMIT ' . $offset . ',' . $perPage;
+    }
+
+    /**
+     * Sets values that will be used by the parent to write the page controls.
+     *
+     * @param string $query
+     * @param int $perPage
+     */
+    protected function setPaginationArgs(string $query, int $perPage)
+    {
+        $totalItems = $this->wpdb->query($query);
+        $totalPages = ceil($totalItems / $perPage);
+
+        $this->set_pagination_args([
+            'total_items' => $totalItems,
+            'total_pages' => $totalPages,
+            'per_page' => $perPage,
+        ]);
+    }
+
+    /**
+     * If there is not a method named `column_{column name}` then this one will be called
+     * to present the value of the column.
+     *
+     * @param object $item
+     * @param string $column_name
+     * @return string|void
+     */
     protected function column_default($item, $column_name)
     {
         if ($column_name === 'row_actions') {
@@ -91,6 +168,15 @@ class Listing extends WP_List_Table
         return $item->{$column_name};
     }
 
+    /**
+     * This is a special pseudo-column handler for the initial checkbox. To invoke it,
+     * use "cb" for the column name. The checkbox is then available for bulk actions.
+     * Naturally, you have to also set up the bulk actions selector and surround the table
+     * with a form tag.
+     *
+     * @param object $item
+     * @return string|void
+     */
     protected function column_cb($item)
     {
         return sprintf(
@@ -108,6 +194,12 @@ class Listing extends WP_List_Table
         return $this;
     }
 
+    /**
+     * Add the form tag and security field to the page. This is required for bulk actions to work.
+     * Be sure to close the form tag after the table is displayed.
+     *
+     * @return $this
+     */
     public function formTag()
     {
 //        echo sprintf(
@@ -121,6 +213,11 @@ class Listing extends WP_List_Table
         return $this;
     }
 
+    /**
+     * Close the form tag and also write a "clear" tag.
+     *
+     * @return $this
+     */
     public function endForm()
     {
         echo '</form><br class="clear" />';
