@@ -3,6 +3,7 @@
 namespace Drengr\Framework;
 
 use Drengr\Model\ListableModel;
+use \InvalidArgumentException;
 use WP_List_Table;
 
 /*
@@ -25,6 +26,9 @@ class Listing extends WP_List_Table
     /** @var \wpdb */
     protected $wpdb;
 
+    // validated array from `get_columns`
+    private $listingColumns;
+
     /**
      * @param string $class The fully qualified name of a class that implements ListableModel
      * @param \wpdb $wpdb
@@ -45,7 +49,34 @@ class Listing extends WP_List_Table
      */
     public function get_columns()
     {
-        return $this->class::getColumns();
+        if (isset($this->listingColumns)) {
+            return $this->listingColumns;
+        }
+
+        $columns = [];
+
+        foreach ($this->class::getColumns() as $key => $value) {
+            if (!is_string($key) || !is_string($value)) {
+                throw new InvalidArgumentException('Column name (key) and heading (value) must be strings.');
+            }
+
+            if (1 === preg_match('/[^-_A-Za-z0-9]/', $key)) {
+                // the key will be used as a CSS class name so we must limit the characters used
+                throw new InvalidArgumentException('Column name (key) has illegal characters.');
+            }
+
+            if (is_numeric(substr($key, 0, 1))
+                || substr($key, 0, 2) === '--'
+                || (substr($key, 0, 1) === '-' && is_numeric(substr($key, 1, 1))))
+            {
+                // more rules for CSS class names
+                throw new InvalidArgumentException('Column name (key) must not start with number or with two hyphens or with a hyphen and a number.');
+            }
+
+            $columns[$key] = __($value);
+        }
+
+        return $this->listingColumns = $columns;
     }
 
     /**
@@ -54,6 +85,14 @@ class Listing extends WP_List_Table
     public function get_sortable_columns()
     {
         return $this->class::getSortableColumns();
+    }
+
+    /**
+     * @return array
+     */
+    public function get_hidden_columns()
+    {
+        return $this->class::getHiddenColumns();
     }
 
     /**
@@ -81,8 +120,9 @@ class Listing extends WP_List_Table
 
         $this->_column_headers = [
             $this->get_columns(),
-            [],
+            $this->get_hidden_columns(),
             $this->get_sortable_columns(),
+            $this->get_primary_column_name(),
         ];
 
         $this->items = $this->wpdb->get_results($query);
@@ -142,11 +182,9 @@ class Listing extends WP_List_Table
     protected function setPaginationArgs(string $query, int $perPage)
     {
         $totalItems = $this->wpdb->query($query);
-        $totalPages = ceil($totalItems / $perPage);
 
         $this->set_pagination_args([
             'total_items' => $totalItems,
-            'total_pages' => $totalPages,
             'per_page' => $perPage,
         ]);
     }
@@ -161,11 +199,13 @@ class Listing extends WP_List_Table
      */
     protected function column_default($item, $column_name)
     {
-        if ($column_name === 'row_actions') {
-            return $this->row_actions(['edit' => 'Edit']);
+        $actions = '';
+
+        if ($column_name === $this->get_primary_column()) {
+            $actions = $this->row_actions($this->class::getRowActions($item));
         }
 
-        return $item->{$column_name};
+        return $item->{$column_name} . $actions;
     }
 
     /**

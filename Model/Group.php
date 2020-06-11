@@ -11,11 +11,10 @@ class Group implements ListableModel
     {
         return [
             'cb' => 'cb',
-            'created_at' => 'Created',
             'id' => 'Id',
             'name' => 'Name',
             'url' => 'URL',
-            'row_actions' => 'Actions',
+            'created_at' => 'Created',
         ];
     }
 
@@ -23,6 +22,18 @@ class Group implements ListableModel
     {
         return [
             'name' => ['name', false]
+        ];
+    }
+
+    public static function getHiddenColumns()
+    {
+        return [];
+    }
+
+    public static function getRowActions($item)
+    {
+        return [
+            'edit-action-class' => '<a href="edit.php?id=' . $item->id . '">Edit</a>',
         ];
     }
 

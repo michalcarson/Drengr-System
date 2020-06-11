@@ -34,4 +34,8 @@ interface ListableModel
      * @return string A SQL query
      */
     public static function getQuery($prefix);
+
+    public static function getHiddenColumns();
+
+    public static function getRowActions($item);
 }
