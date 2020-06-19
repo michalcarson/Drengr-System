@@ -8,5 +8,6 @@
  */
 return [
     'Drengr' => '',
+    'JetRouter' => '../jetrouter/src/',
     'Psr' => 'Psr' . DIRECTORY_SEPARATOR,
 ];

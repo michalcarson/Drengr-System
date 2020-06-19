@@ -15,6 +15,7 @@ class Config
         'autoload',
         'bindings',
         'database',
+        'router',
     ];
     protected $configs = [];
 

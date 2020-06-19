@@ -2,17 +2,18 @@
 
 namespace Drengr\Framework;
 
+use JetRouter\Router as JetRouter;
+
 class Application
 {
-    /**
-     * @var Config
-     */
+    /** @var Config */
     private $config;
 
-    /**
-     * @var Container
-     */
+    /** @var Container */
     private $container;
+
+    /** @var JetRouter */
+    private $router;
 
     /**
      * The name of the bootstrap file for this application. We need
@@ -46,6 +47,10 @@ class Application
 
     public function run()
     {
+        $router = $this->container->get(JetRouter::class);
 
+        $router->get('group/edit/{id}', 'edit_group', function($id) {
+            echo "edit group $id<br>";
+        });
     }
 }

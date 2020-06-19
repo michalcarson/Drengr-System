@@ -1,10 +1,35 @@
-<?php
 
 namespace Drengr\Framework;
 
 use Drengr\Exception\UnknownIdentifierException;
 use Psr\Container\ContainerInterface;
 
+/**
+ * This is a VERY simple injection container for WordPress plugins.
+ *
+ * This class is configured through an array of bindings which might resemble the following.
+ * [
+ *     Database::class => function (Container $container) {
+ *         $wpdb = $container->get('wpdb');
+ *         $container->require('upgrade'); // includes the wp-admin/upgrade.php file
+ *
+ *         $option = $container->get(Option::class);
+ *
+ *         $config = $container->get('config')->get('database');
+ *
+ *         return new Database(
+ *             $config,
+ *             $wpdb,
+ *             $option
+ *         );
+ *     },
+ *
+ *     'wpdb' => function (Container $container) {
+ *         global $wpdb;
+ *         return $wpdb;
+ *     },
+ * ]
+ */
 class Container implements ContainerInterface
 {
     /**

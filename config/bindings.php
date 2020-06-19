@@ -6,6 +6,7 @@ use Drengr\Framework\Container;
 use Drengr\Framework\Database;
 use Drengr\Framework\ListingFactory;
 use Drengr\Framework\Option;
+use JetRouter\Router;
 
 return [
     'admin' => function (Container $container) {
@@ -48,6 +49,11 @@ return [
 
     Option::class => function (Container $container) {
         return new Option();
+    },
+
+    Router::class => function (Container $container) {
+        $config = $container->get('config')->get('router.config');
+        return Router::create($config);
     },
 
     'wpdb' => function (Container $container) {

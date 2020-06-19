@@ -11,9 +11,11 @@ class Group implements ListableModel
     {
         return [
             'cb' => 'cb',
-            'id' => 'Id',
             'name' => 'Name',
             'url' => 'URL',
+            'sturaesman' => 'Sturaesman',
+            'authenticity_officer' => 'Authenticity Officer',
+            'training_officer' => 'Training Officer',
             'created_at' => 'Created',
         ];
     }
@@ -33,12 +35,21 @@ class Group implements ListableModel
     public static function getRowActions($item)
     {
         return [
-            'edit-action-class' => '<a href="edit.php?id=' . $item->id . '">Edit</a>',
+            'edit-action-class' => '<a href="/drengr/group/edit/' . $item->id . '">Edit</a>',
         ];
     }
 
     public static function getQuery($prefix)
     {
-        return "SELECT * FROM {$prefix}drengr_group";
+        return "select 
+                g.*, 
+                s.name sturaesman, 
+                ao.name authenticity_officer, 
+                t.name training_officer 
+            from {$prefix}drengr_group g
+            left outer join {$prefix}drengr_member s on g.sturaesman = s.id 
+            left outer join {$prefix}drengr_member ao on g.authenticity_officer = ao.id 
+            left outer join {$prefix}drengr_member t on g.training_officer = t.id 
+        ";
     }
 }
