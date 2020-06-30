@@ -48,9 +48,7 @@ class Application
     public function run()
     {
         $router = $this->container->get(JetRouter::class);
-
-        $router->get('group/edit/{id}', 'edit_group', function($id) {
-            echo "edit group $id<br>";
-        });
+        $routes = $this->config->get('router.routes');
+        $routes($router);
     }
 }
