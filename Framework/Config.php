@@ -16,6 +16,7 @@ class Config
         'bindings',
         'database',
         'router',
+        'views',
     ];
     protected $configs = [];
 
