@@ -1,12 +1,15 @@
 <?php
 
+use Drengr\Controller\GroupController;
+use Drengr\Framework\Container;
+use Drengr\Framework\RouteHelper;
+use JetRouter\Router as JetRouter;
+
 return [
     'config' => [
         'namespace' => 'drengr',
     ],
-    'routes' => function ($router) {
-        $router->get('group/edit/{id}', 'edit_group', function($id) {
-            echo "edit group $id<br>";
-        });
+    'routes' => function (JetRouter $router, Container $container) {
+        RouteHelper::resource('group', GroupController::class);
     }
 ];

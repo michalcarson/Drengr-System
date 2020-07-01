@@ -47,8 +47,11 @@ class Application
 
     public function run()
     {
-        $router = $this->container->get(JetRouter::class);
+        $this->router = $this->container->get(JetRouter::class);
+
+        RouteHelper::init($this->config->get('router.config'), $this->container, $this->router);
+
         $routes = $this->config->get('router.routes');
-        $routes($router);
+        $routes($this->router, $this->container);
     }
 }

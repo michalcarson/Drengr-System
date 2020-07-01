@@ -2,6 +2,7 @@
 
 use Drengr\App\Admin;
 use Drengr\App\Client;
+use Drengr\Controller\GroupController;
 use Drengr\Framework\Container;
 use Drengr\Framework\Database;
 use Drengr\Framework\ListingFactory;
@@ -38,6 +39,10 @@ return [
             $wpdb,
             $option
         );
+    },
+
+    GroupController::class => function (Container $container) {
+        return new GroupController();
     },
 
     ListingFactory::class => function (Container $container) {
