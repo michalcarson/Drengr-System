@@ -7,6 +7,8 @@ use Drengr\Framework\Container;
 use Drengr\Framework\Database;
 use Drengr\Framework\ListingFactory;
 use Drengr\Framework\Option;
+use Drengr\Repository\GroupRepository;
+use Drengr\Request\GroupRequest;
 use JetRouter\Router;
 
 return [
@@ -42,7 +44,19 @@ return [
     },
 
     GroupController::class => function (Container $container) {
-        return new GroupController();
+        return new GroupController(
+            $container->get(GroupRequest::class),
+            $container->get(GroupRepository::class),
+        );
+    },
+
+    GroupRepository::class => function (Container $container) {
+        $database = $container->get(Database::class);
+        return new GroupRepository($database);
+    },
+
+    GroupRequest::class => function (Container $container) {
+        return new GroupRequest();
     },
 
     ListingFactory::class => function (Container $container) {

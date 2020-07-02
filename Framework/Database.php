@@ -22,6 +22,31 @@ class Database
         $this->option = $option;
     }
 
+    public function query(string $sql)
+    {
+        return $this->wpdb->get_results($sql, ARRAY_A);
+    }
+
+    public function queryOne(string $sql)
+    {
+        return $this->wpdb->get_row($sql, ARRAY_A);
+    }
+
+    public function insert(string $table, array $data)
+    {
+        return $this->wpdb->insert($table, $data);
+    }
+
+    public function update(string $table, array $data, array $where)
+    {
+        return $this->wpdb->update($table, $data, $where);
+    }
+
+    public function delete(string $table, array $where)
+    {
+        return $this->wpdb->delete($table, $where);
+    }
+
     /**
      * Check the current version (in config) against the installed version (in WP options)
      * and update the database schema only if needed.
@@ -39,7 +64,7 @@ class Database
      */
     public function updateTables()
     {
-        $prefix = $this->wpdb->prefix;
+        $prefix = $this->getPrefix();
         $charset = $this->wpdb->get_charset_collate();
 
         foreach ($this->config['tables'] as $table => $createStatement) {
@@ -50,5 +75,10 @@ class Database
             );
             dbDelta($sql);
         }
+    }
+
+    public function getPrefix()
+    {
+        return $this->wpdb->prefix . $this->config['namespace'];
     }
 }

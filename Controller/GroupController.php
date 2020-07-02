@@ -2,11 +2,26 @@
 
 namespace Drengr\Controller;
 
+use Drengr\Repository\GroupRepository;
+use Drengr\Request\GroupRequest;
+
 class GroupController extends BaseController
 {
+    /** @var GroupRequest */
+    private $request;
+
+    /** @var GroupRepository */
+    private $repository;
+
+    public function __construct(GroupRequest $request, GroupRepository $repository)
+    {
+        $this->request = $request;
+        $this->repository = $repository;
+    }
+
     public function index()
     {
-        echo __METHOD__ . '<br>';
+        return $this->repository->getAll($this->request->getPageParameters());
     }
 
     public function create()
@@ -16,7 +31,7 @@ class GroupController extends BaseController
 
     public function read($id)
     {
-        echo __METHOD__ . '<br>id = ' . $id;
+        return $this->repository->find($id);
     }
 
     public function update($id)
@@ -24,12 +39,12 @@ class GroupController extends BaseController
         echo __METHOD__ . '<br>';
     }
 
-    public function patch()
+    public function patch($id)
     {
         echo __METHOD__ . '<br>';
     }
 
-    public function delete()
+    public function delete($id)
     {
         echo __METHOD__ . '<br>';
     }

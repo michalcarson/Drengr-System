@@ -7,23 +7,25 @@ return [
      */
     'version' => 3,
 
+    'namespace' => 'drengr_',
+
     'tables' => [
         'email_type' =>
-            "CREATE TABLE {prefix}drengr_email_type (
+            "CREATE TABLE {prefix}email_type (
               id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
               name varchar(50) NOT NULL,
               PRIMARY KEY  (id)
             ) {charset};",
 
         'phone_type' =>
-            "CREATE TABLE {prefix}drengr_phone_type (
+            "CREATE TABLE {prefix}phone_type (
                 id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
                 name varchar(50) NOT NULL,
                 PRIMARY KEY  (id)
             ) {charset};",
 
         'group' =>
-            "CREATE TABLE {prefix}drengr_group (
+            "CREATE TABLE {prefix}group (
                 id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
                 name varchar(50) NOT NULL,
                 authenticity_officer int(11) UNSIGNED,
@@ -37,7 +39,7 @@ return [
             ) {charset};",
 
         'member' =>
-            "CREATE TABLE {prefix}drengr_member (
+            "CREATE TABLE {prefix}member (
                 id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
                 name varchar(255) NOT NULL,
                 viking_name varchar(255),
@@ -55,7 +57,7 @@ return [
             ) {charset};",
 
         'certification' =>
-            "CREATE TABLE {prefix}drengr_certification (
+            "CREATE TABLE {prefix}certification (
                 id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
                 name varchar(50) NOT NULL,
                 short_name varchar(50),
@@ -70,21 +72,21 @@ return [
             ) {charset};",
 
         'rank' =>
-            "CREATE TABLE {prefix}drengr_rank (
+            "CREATE TABLE {prefix}rank (
                 id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
                 name varchar(50) NOT NULL,
                 PRIMARY KEY  (id)
             ) {charset};",
 
         'role' =>
-            "CREATE TABLE {prefix}drengr_role (
+            "CREATE TABLE {prefix}role (
                 id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
                 name varchar(50) NOT NULL,
                 PRIMARY KEY  (id)
             ) {charset};",
 
         'group_member' =>
-            "CREATE TABLE {prefix}drengr_group_member (
+            "CREATE TABLE {prefix}group_member (
                 id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
                 membership_year tinyint(4) NOT NULL,
                 group_id int(11) UNSIGNED NOT NULL,
@@ -95,13 +97,13 @@ return [
                 updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 deleted_at datetime,
                 PRIMARY KEY  (id),
-                CONSTRAINT FOREIGN KEY group_member_group_fk (group_id) REFERENCES {prefix}drengr_group (id),
-                CONSTRAINT FOREIGN KEY group_member_member_fk (member_id) REFERENCES {prefix}drengr_member (id), 
-                CONSTRAINT FOREIGN KEY group_member_role_fk (role_id) REFERENCES {prefix}drengr_role (id) 
+                CONSTRAINT FOREIGN KEY group_member_group_fk (group_id) REFERENCES {prefix}group (id),
+                CONSTRAINT FOREIGN KEY group_member_member_fk (member_id) REFERENCES {prefix}member (id), 
+                CONSTRAINT FOREIGN KEY group_member_role_fk (role_id) REFERENCES {prefix}role (id) 
             ) {charset};",
 
         'member_certification' =>
-            "CREATE TABLE {prefix}drengr_member_certification (
+            "CREATE TABLE {prefix}member_certification (
                 id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
                 date_achieved date NOT NULL,
                 certification_id int(11) UNSIGNED NOT NULL,
@@ -112,13 +114,13 @@ return [
                 updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 deleted_at datetime,
                 PRIMARY KEY  (id),
-                CONSTRAINT FOREIGN KEY member_certification_cert_fk (certification_id) REFERENCES {prefix}drengr_certification (id),
-                CONSTRAINT FOREIGN KEY member_certification_member_fk (member_id) REFERENCES {prefix}drengr_member (id),
-                CONSTRAINT FOREIGN KEY member_certification_officer_fk (assessment_officer_id) REFERENCES {prefix}drengr_member (id) 
+                CONSTRAINT FOREIGN KEY member_certification_cert_fk (certification_id) REFERENCES {prefix}certification (id),
+                CONSTRAINT FOREIGN KEY member_certification_member_fk (member_id) REFERENCES {prefix}member (id),
+                CONSTRAINT FOREIGN KEY member_certification_officer_fk (assessment_officer_id) REFERENCES {prefix}member (id) 
             ) {charset};",
 
         'member_email' =>
-            "CREATE TABLE {prefix}drengr_member_email (
+            "CREATE TABLE {prefix}member_email (
                 id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
                 email_type_id int(11) UNSIGNED NOT NULL,
                 member_id int(11) UNSIGNED NOT NULL,
@@ -127,12 +129,12 @@ return [
                 updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 deleted_at datetime,
                 PRIMARY KEY  (id),
-                CONSTRAINT FOREIGN KEY member_email_email_type_fk (email_type_id) REFERENCES {prefix}drengr_email_type (id),
-                CONSTRAINT FOREIGN KEY member_email_member_fk (member_id) REFERENCES {prefix}drengr_member (id)
+                CONSTRAINT FOREIGN KEY member_email_email_type_fk (email_type_id) REFERENCES {prefix}email_type (id),
+                CONSTRAINT FOREIGN KEY member_email_member_fk (member_id) REFERENCES {prefix}member (id)
             ) {charset};",
 
         'member_phone' =>
-            "CREATE TABLE {prefix}drengr_member_phone (
+            "CREATE TABLE {prefix}member_phone (
                 id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
                 phone_type_id int(11) UNSIGNED NOT NULL,
                 member_id int(11) UNSIGNED NOT NULL,
@@ -141,12 +143,12 @@ return [
                 updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 deleted_at datetime,
                 PRIMARY KEY  (id),
-                CONSTRAINT FOREIGN KEY member_phone_phone_type_fk (phone_type_id) REFERENCES {prefix}drengr_phone_type (id),
-                CONSTRAINT FOREIGN KEY member_phone_member_fk (member_id) REFERENCES {prefix}drengr_member (id)
+                CONSTRAINT FOREIGN KEY member_phone_phone_type_fk (phone_type_id) REFERENCES {prefix}phone_type (id),
+                CONSTRAINT FOREIGN KEY member_phone_member_fk (member_id) REFERENCES {prefix}member (id)
             ) {charset};",
 
         'member_rank' =>
-            "CREATE TABLE {prefix}drengr_member_rank (
+            "CREATE TABLE {prefix}member_rank (
                 id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
                 member_id int(11) UNSIGNED NOT NULL,
                 rank_id int(11) UNSIGNED NOT NULL,
@@ -155,8 +157,8 @@ return [
                 updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 deleted_at datetime,
                 PRIMARY KEY  (id),
-                CONSTRAINT FOREIGN KEY member_rank_rank_fk (rank_id) REFERENCES {prefix}drengr_rank (id),
-                CONSTRAINT FOREIGN KEY member_rank_member_fk (member_id) REFERENCES {prefix}drengr_member (id)
+                CONSTRAINT FOREIGN KEY member_rank_rank_fk (rank_id) REFERENCES {prefix}rank (id),
+                CONSTRAINT FOREIGN KEY member_rank_member_fk (member_id) REFERENCES {prefix}member (id)
             ) {charset};",
 
     ]
