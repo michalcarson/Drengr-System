@@ -75,6 +75,12 @@ return [
 
     Router::class => function (Container $container) {
         $config = $container->get('config')->get('router.config');
+
+        // work-around until JetRouter recognizes Content_Type: application/json
+        if (isset($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] === 'application/json') {
+            $config['outputFormat'] = 'json';
+        }
+
         return Router::create($config);
     },
 
