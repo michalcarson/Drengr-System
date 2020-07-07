@@ -34,7 +34,11 @@ class Database
 
     public function insert(string $table, array $data)
     {
-        return $this->wpdb->insert($table, $data);
+        if ($this->wpdb->insert($table, $data) !== false) {
+            return $this->wpdb->insert_id;
+        }
+
+        return false;
     }
 
     public function update(string $table, array $data, array $where)

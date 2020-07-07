@@ -21,12 +21,16 @@ class GroupController extends BaseController
 
     public function index()
     {
-        return $this->repository->getAll($this->request->getPageParameters());
+        return $this->repository->getAll(
+            $this->request->getPageParameters()
+        );
     }
 
     public function create()
     {
-        echo __METHOD__ . '<br>';
+        return $this->repository->create(
+            $this->request->getValidatedParameters()
+        );
     }
 
     public function read($id)

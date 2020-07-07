@@ -43,6 +43,13 @@ abstract class Repository
         );
     }
 
+    public function create($data)
+    {
+        if (($id = $this->database->insert($this->getTableName(), $data)) !== false) {
+            return $this->find($id);
+        }
+    }
+
     protected function getTableName()
     {
         return $this->database->getPrefix() . $this->table;
