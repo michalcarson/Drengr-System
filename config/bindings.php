@@ -7,6 +7,7 @@ use Drengr\Framework\Container;
 use Drengr\Framework\Database;
 use Drengr\Framework\ListingFactory;
 use Drengr\Framework\Option;
+use Drengr\Framework\Validator;
 use Drengr\Repository\GroupRepository;
 use Drengr\Request\GroupRequest;
 use JetRouter\Router;
@@ -44,10 +45,10 @@ return [
     },
 
     GroupController::class => function (Container $container) {
-        return new GroupController(
-            $container->get(GroupRequest::class),
-            $container->get(GroupRepository::class),
-        );
+        $request = $container->get(GroupRequest::class);
+        $repository = $container->get(GroupRepository::class);
+
+        return new GroupController($request, $repository);
     },
 
     GroupRepository::class => function (Container $container) {
@@ -56,7 +57,9 @@ return [
     },
 
     GroupRequest::class => function (Container $container) {
-        return new GroupRequest();
+        $validator = $container->get(Validator::class);
+        return (new GroupRequest($validator))
+            ->initialize();
     },
 
     ListingFactory::class => function (Container $container) {
@@ -73,6 +76,10 @@ return [
     Router::class => function (Container $container) {
         $config = $container->get('config')->get('router.config');
         return Router::create($config);
+    },
+
+    Validator::class => function (Container $container) {
+        return new Validator();
     },
 
     'wpdb' => function (Container $container) {
