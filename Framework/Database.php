@@ -6,6 +6,7 @@ class Database
 {
     const INSTALLEDVERSION = 'installed_db_version';
 
+    /** the last error encountered by this class */
     protected $lastError;
 
     /** @var array */

@@ -16,7 +16,7 @@ class Request
     protected $content;
 
     /** @var Validator */
-    private $validator;
+    protected $validator;
 
     public function __construct(Validator $validator)
     {
