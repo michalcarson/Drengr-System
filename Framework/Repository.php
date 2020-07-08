@@ -50,6 +50,20 @@ abstract class Repository
         }
     }
 
+    public function update($id, $data)
+    {
+        if ($this->database->update($this->getTableName(), $data, ['id' => $id]) !== false) {
+            return $this->find($id);
+        }
+
+        throw new \Exception($this->database->getError());
+    }
+
+    public function delete($id)
+    {
+        return $this->database->delete($this->getTableName(), ['id' => $id]);
+    }
+
     protected function getTableName()
     {
         return $this->database->getPrefix() . $this->table;

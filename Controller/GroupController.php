@@ -21,36 +21,68 @@ class GroupController extends BaseController
 
     public function index()
     {
-        return $this->repository->getAll(
-            $this->request->getPageParameters()
-        );
+        try {
+            return $this->repository->getAll(
+                $this->request->getPageParameters()
+            );
+        } catch (\Exception $exception) {
+            return ['error' => $exception->getMessage()];
+        }
     }
 
     public function create()
     {
-        return $this->repository->create(
-            $this->request->getValidatedParameters()
-        );
+        try {
+            return $this->repository->create(
+                $this->request->getValidatedParameters()
+            );
+        } catch (\Exception $exception) {
+            return ['error' => $exception->getMessage()];
+        }
     }
 
     public function read($id)
     {
-        return $this->repository->find($id);
+        try {
+            return $this->repository->find($id);
+        } catch (\Exception $exception) {
+            return ['error' => $exception->getMessage()];
+        }
     }
 
     public function update($id)
     {
-        echo __METHOD__ . '<br>';
+        try {
+            return $this->repository->update(
+                $id,
+                $this->request->getValidatedParameters()
+            );
+        } catch (\Exception $exception) {
+            return ['error' => $exception->getMessage()];
+        }
     }
 
     public function patch($id)
     {
-        echo __METHOD__ . '<br>';
+        try {
+            return $this->repository->update(
+                $id,
+                $this->request->getValidatedParameters()
+            );
+        } catch (\Exception $exception) {
+            return ['error' => $exception->getMessage()];
+        }
     }
 
     public function delete($id)
     {
-        echo __METHOD__ . '<br>';
+        try {
+            return [
+                'rows' => $this->repository->delete($id)
+            ];
+        } catch (\Exception $exception) {
+            return ['error' => $exception->getMessage()];
+        }
     }
 
 }

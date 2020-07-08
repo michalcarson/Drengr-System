@@ -172,4 +172,16 @@ class Request
         return isset($this->server['CONTENT_TYPE'])
             && $this->server['CONTENT_TYPE'] === 'application/json';
     }
+
+    /**
+     * Return the HTTP method used to make the request.
+     *
+     * @return string
+     */
+    public function getMethod()
+    {
+        return isset($this->server['REQUEST_METHOD'])
+            ? strtolower($this->server['REQUEST_METHOD'])
+            : 'get';
+    }
 }
