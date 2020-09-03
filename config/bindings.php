@@ -1,8 +1,10 @@
 <?php
 
 use Drengr\App\Admin;
+use Drengr\App\Api;
 use Drengr\App\Client;
 use Drengr\Controller\GroupController;
+use Drengr\Controller\GroupRestController;
 use Drengr\Framework\Container;
 use Drengr\Framework\Database;
 use Drengr\Framework\ListingFactory;
@@ -29,6 +31,13 @@ return [
         return new Client();
     },
 
+    'api' => function ($container) {
+        $controllers = [
+            $container->get(GroupRestController::class),
+        ];
+        return new Api($controllers);
+    },
+
     Database::class => function (Container $container) {
         $wpdb = $container->get('wpdb');
         $container->require('upgrade');
@@ -42,6 +51,12 @@ return [
             $wpdb,
             $option
         );
+    },
+
+    GroupRestController::class => function (Container $container) {
+        $repository = $container->get(GroupRepository::class);
+
+        return new GroupRestController($repository);
     },
 
     GroupController::class => function (Container $container) {

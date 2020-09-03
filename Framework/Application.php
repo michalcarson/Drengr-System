@@ -42,6 +42,9 @@ class Application
         $public = $this->container->get('public');
         $public->register();
 
+        $api = $this->container->get('api');
+        $api->register();
+
         return $this;
     }
 

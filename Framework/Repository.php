@@ -2,6 +2,8 @@
 
 namespace Drengr\Framework;
 
+use Drengr\Exception\ModelNotFoundException;
+
 abstract class Repository
 {
     /** @var Database */
@@ -48,6 +50,21 @@ abstract class Repository
             $where,
             $limit
         );
+    }
+
+    /**
+     * @param $id
+     * @return array|object|void
+     * @throws ModelNotFoundException
+     */
+    public function findOrFail($id)
+    {
+        $item = $this->find($id);
+        if (!$item) {
+            throw new ModelNotFoundException();
+        }
+
+        return $item;
     }
 
     /**
