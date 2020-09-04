@@ -4,6 +4,8 @@ namespace Drengr\Controller;
 
 use WP_Error;
 use WP_REST_Controller;
+use WP_REST_Request;
+use WP_REST_Response;
 use WP_REST_Server;
 
 class AbstractRestController extends WP_REST_Controller
@@ -17,13 +19,13 @@ class AbstractRestController extends WP_REST_Controller
                 [
                     'methods' => WP_REST_Server::READABLE,
                     'callback' => [$this, 'get_items'],
-                    'permission_callback' => [$this, 'get_items_permissions_check'],
+                    'permission_callback' => __return_true, // @todo [$this, 'get_items_permissions_check'],
                     'args' => $this->get_collection_params(),
                 ],
                 [
                     'methods' => WP_REST_Server::CREATABLE,
                     'callback' => [$this, 'create_item'],
-                    'permission_callback' => [$this, 'create_item_permissions_check'],
+                    'permission_callback' =>  __return_true, // @todo [$this, 'create_item_permissions_check'],
                     'args' => $this->get_endpoint_args_for_item_schema(WP_REST_Server::CREATABLE),
                 ],
                 'schema' => [$this, 'get_item_schema'],
@@ -43,19 +45,19 @@ class AbstractRestController extends WP_REST_Controller
                 [
                     'methods' => WP_REST_Server::READABLE,
                     'callback' => [$this, 'get_item'],
-                    'permission_callback' => [$this, 'get_item_permissions_check'],
-                    'args' => $this->get_endpoint_args_for_item_schema(WP_REST_Server::READABLE),
+//                    'permission_callback' => [$this, 'get_item_permissions_check'],
+//                    'args' => $this->get_endpoint_args_for_item_schema(WP_REST_Server::READABLE),
                 ],
                 [
                     'methods' => WP_REST_Server::EDITABLE,
                     'callback' => [$this, 'update_item'],
-                    'permission_callback' => [$this, 'update_item_permissions_check'],
+                    'permission_callback' => __return_true, // @todo [$this, 'update_item_permissions_check'],
                     'args' => $this->get_endpoint_args_for_item_schema(WP_REST_Server::EDITABLE),
                 ],
                 [
                     'methods' => WP_REST_Server::DELETABLE,
                     'callback' => [$this, 'delete_item'],
-                    'permission_callback' => [$this, 'delete_item_permissions_check'],
+                    'permission_callback' => __return_true, // @todo [$this, 'delete_item_permissions_check'],
                     'args' => $this->get_endpoint_args_for_item_schema(WP_REST_Server::DELETABLE),
                 ],
                 'schema' => [$this, 'get_item_schema'],
@@ -85,5 +87,69 @@ class AbstractRestController extends WP_REST_Controller
         }
 
         return true; // TODO: check for admin permissions
+    }
+
+    /**
+     * Return the parameters that control pagination.
+     *
+     * @param WP_REST_Request $request
+     * @return array
+     */
+    protected function getPageParameters(WP_REST_Request $request)
+    {
+        $page = $this->getRequestedPageNumber($request);
+        $perPage = $this->getRequestedPerPage($request);
+
+        return compact('page', 'perPage');
+    }
+
+    protected function getRequestedPerPage(WP_REST_Request $request)
+    {
+        return empty($request->get_param('per_page')) ? 10 : $request->get_param('per_page');
+    }
+
+    protected function getRequestedPageNumber(WP_REST_Request $request)
+    {
+        return empty($request->get_param('page')) ? 0 : $request->get_param('page');
+    }
+
+    /**
+     * Set headers to let the Client Script be aware of the pagination.
+     *
+     * @param WP_REST_Response $response
+     * @param integer $total The number of found items
+     * @param integer $perPage The number of items per page
+     * @return WP_REST_Response $response
+     */
+    protected function addTotalHeaders(WP_REST_Response $response, int $total, int $perPage)
+    {
+        if ( ! $total || ! $perPage) {
+            return $response;
+        }
+
+        $totalPages = ceil($total / $perPage);
+
+        $response->header('X-WP-Total', $total);
+        $response->header('X-WP-TotalPages', $totalPages);
+
+        return $response;
+    }
+
+    /**
+     * @param array $items
+     * @param WP_REST_Request $request
+     * @return WP_Error|\WP_HTTP_Response|WP_REST_Response
+     */
+    protected function buildResponse(array $items, WP_REST_Request $request)
+    {
+        $responseData = [];
+
+        foreach ($items as $item) {
+            $responseData[] = $this->prepare_response_for_collection(
+                $this->prepare_item_for_response($item, $request)
+            );
+        }
+
+        return rest_ensure_response($responseData);
     }
 }

@@ -29,7 +29,7 @@ class GroupRestController extends AbstractRestController
      */
     public function get_items_permissions_check($request)
     {
-        return $this->userIsLoggedIn();
+        return true; // @TODO $this->userIsLoggedIn();
     }
 
     /**
@@ -41,6 +41,23 @@ class GroupRestController extends AbstractRestController
      */
     public function get_items($request)
     {
+        try {
+            $items = $this->repository->getAll(
+                $this->getPageParameters($request)
+            );
+
+            $response = $this->buildResponse($items, $request);
+
+            $response = $this->addTotalHeaders(
+                $response,
+                count($items),
+                $this->getRequestedPerPage($request)
+            );
+
+            return $response;
+        } catch (\Exception $e) {
+            return new WP_Error('Exception', $e->getMessage(), ['status' => empty($e->getCode()) ? 500 : $e->getCode()]);
+        }
     }
 
     /**
@@ -52,7 +69,7 @@ class GroupRestController extends AbstractRestController
      */
     public function get_item_permissions_check($request)
     {
-        return true; // $this->userIsLoggedIn();
+        return true; // @TODO $this->userIsLoggedIn();
     }
 
     /**
@@ -66,17 +83,9 @@ class GroupRestController extends AbstractRestController
     {
         try {
             $id = $request->get_param('id');
+            $item = $this->repository->findOrFail($id);
 
-            $data = [
-                $this->prepare_response_for_collection(
-                    $this->prepare_item_for_response(
-                        $this->repository->findOrFail($id),
-                        $request
-                    )
-                ),
-            ];
-
-            return rest_ensure_response($data);
+            return $this->buildResponse([$item], $request);
         } catch (ModelNotFoundException $e) {
             return new WP_Error('Not Found', 'Group was not found.', ['status' => 404]);
         } catch (\Exception $e) {
@@ -93,7 +102,7 @@ class GroupRestController extends AbstractRestController
      */
     public function create_item_permissions_check($request)
     {
-        return $this->userIsAdmin();
+        return true; // @TODO $this->userIsAdmin();
     }
 
     /**
@@ -105,6 +114,13 @@ class GroupRestController extends AbstractRestController
      */
     public function create_item($request)
     {
+        try {
+            $item = $this->repository->create($request->get_params());
+
+            return $this->buildResponse([$item], $request);
+        } catch (\Exception $e) {
+            return new WP_Error('Exception', $e->getMessage(), ['status' => empty($e->getCode()) ? 500 : $e->getCode()]);
+        }
     }
 
     /**
@@ -116,7 +132,7 @@ class GroupRestController extends AbstractRestController
      */
     public function update_item_permissions_check($request)
     {
-        return $this->userIsAdmin();
+        return true; // @TODO $this->userIsAdmin();
     }
 
     /**
@@ -128,6 +144,14 @@ class GroupRestController extends AbstractRestController
      */
     public function update_item($request)
     {
+        try {
+            $id = $request->get_param('id');
+            $item = $this->repository->update($id, $request->get_params());
+
+            return $this->buildResponse([$item], $request);
+        } catch (\Exception $e) {
+            return new WP_Error('Exception', $e->getMessage(), ['status' => empty($e->getCode()) ? 500 : $e->getCode()]);
+        }
     }
 
     /**
@@ -139,7 +163,7 @@ class GroupRestController extends AbstractRestController
      */
     public function delete_item_permissions_check($request)
     {
-        return $this->userIsAdmin();
+        return true; // @TODO $this->userIsAdmin();
     }
 
     /**
@@ -151,6 +175,19 @@ class GroupRestController extends AbstractRestController
      */
     public function delete_item($request)
     {
+        try {
+            $id = $request->get_param('id');
+            $data = [
+                'rows' => $this->repository->delete($id)
+            ];
+
+            $response = $this->buildResponse([], $request);
+            $response->set_data($data);
+
+            return $response;
+        } catch (\Exception $e) {
+            return new WP_Error('Exception', $e->getMessage(), ['status' => empty($e->getCode()) ? 500 : $e->getCode()]);
+        }
     }
 
     /**
@@ -162,7 +199,7 @@ class GroupRestController extends AbstractRestController
      */
     protected function prepare_item_for_database($request)
     {
-        return (object)['pretend' => 'stuff'];
+        return (object) ['pretend' => 'stuff'];
     }
 
     /**
@@ -175,6 +212,6 @@ class GroupRestController extends AbstractRestController
      */
     public function prepare_item_for_response($item, $request)
     {
-        return new WP_REST_Response((array)$item);
+        return new WP_REST_Response((array) $item);
     }
 }
