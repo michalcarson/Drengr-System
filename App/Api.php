@@ -16,10 +16,14 @@ class Api
 
     public function register()
     {
-        add_action('rest_api_init', [$this, 'registerControllers']);
+        add_action('rest_api_init', [$this, 'registerRoutes']);
+
+        foreach ($this->controllers as $controller) {
+            $controller->register();
+        }
     }
 
-    public function registerControllers()
+    public function registerRoutes()
     {
         foreach ($this->controllers as $controller) {
             $controller->register_routes();

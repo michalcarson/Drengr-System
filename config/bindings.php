@@ -3,12 +3,14 @@
 use Drengr\App\Admin;
 use Drengr\App\Api;
 use Drengr\App\Client;
+use Drengr\Controller\AuthenticationController;
 use Drengr\Controller\GroupController;
 use Drengr\Controller\GroupRestController;
 use Drengr\Framework\Container;
 use Drengr\Framework\Database;
 use Drengr\Framework\ListingFactory;
 use Drengr\Framework\Option;
+use Drengr\Framework\Request;
 use Drengr\Framework\Validator;
 use Drengr\Repository\GroupRepository;
 use Drengr\Request\GroupRequest;
@@ -33,9 +35,15 @@ return [
 
     'api' => function ($container) {
         $controllers = [
+            $container->get(AuthenticationController::class),
             $container->get(GroupRestController::class),
         ];
         return new Api($controllers);
+    },
+
+    AuthenticationController::class => function (Container $container) {
+        $request = $container->get(Request::class);
+        return new AuthenticationController('drengr/v1', $request);
     },
 
     Database::class => function (Container $container) {
@@ -86,6 +94,11 @@ return [
 
     Option::class => function (Container $container) {
         return new Option();
+    },
+
+    Request::class => function (Container $container) {
+        $validator = $container->get(Validator::class);
+        return (new Request($validator))->initialize();
     },
 
     Router::class => function (Container $container) {

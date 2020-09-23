@@ -78,6 +78,26 @@ class Request
     }
 
     /**
+     * Return the value of a header.
+     *
+     * @param $name
+     * @return mixed|null
+     */
+    public function header($name)
+    {
+        foreach ($this->server as $key => $value) {
+            if (
+                strtolower($name) === strtolower($key) ||
+                strtolower('http_' . $name) === strtolower($key)
+            ) {
+                return $value;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Return the parameters that control pagination.
      *
      * @return array

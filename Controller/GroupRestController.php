@@ -18,7 +18,7 @@ class GroupRestController extends AbstractRestController
         $this->repository = $repository;
 
         $this->namespace = 'drengr/v1';
-        $this->rest_base = '/group';
+        $this->rest_base = 'group';
     }
 
     /**
@@ -29,7 +29,7 @@ class GroupRestController extends AbstractRestController
      */
     public function get_items_permissions_check($request)
     {
-        return true; // @TODO $this->userIsLoggedIn();
+        return $this->userIsLoggedIn();
     }
 
     /**
@@ -69,7 +69,7 @@ class GroupRestController extends AbstractRestController
      */
     public function get_item_permissions_check($request)
     {
-        return true; // @TODO $this->userIsLoggedIn();
+        return $this->userIsLoggedIn();
     }
 
     /**
@@ -102,7 +102,7 @@ class GroupRestController extends AbstractRestController
      */
     public function create_item_permissions_check($request)
     {
-        return true; // @TODO $this->userIsAdmin();
+        return $this->userIsAdmin();
     }
 
     /**
@@ -132,7 +132,7 @@ class GroupRestController extends AbstractRestController
      */
     public function update_item_permissions_check($request)
     {
-        return true; // @TODO $this->userIsAdmin();
+        return $this->userIsAdmin();
     }
 
     /**
@@ -163,7 +163,7 @@ class GroupRestController extends AbstractRestController
      */
     public function delete_item_permissions_check($request)
     {
-        return true; // @TODO $this->userIsAdmin();
+        return $this->userIsAdmin();
     }
 
     /**

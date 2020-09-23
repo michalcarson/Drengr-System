@@ -2,6 +2,7 @@
 
 namespace Drengr\Controller;
 
+use SodiumException;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Request;
@@ -10,22 +11,27 @@ use WP_REST_Server;
 
 class AbstractRestController extends WP_REST_Controller
 {
+    public function register()
+    {
+        // nop
+    }
+
     public function register_routes()
     {
         register_rest_route(
             $this->namespace,
-            '/' . $this->rest_base,
+            $this->rest_base,
             [
                 [
                     'methods' => WP_REST_Server::READABLE,
                     'callback' => [$this, 'get_items'],
-                    'permission_callback' => __return_true, // @todo [$this, 'get_items_permissions_check'],
+                    'permission_callback' => [$this, 'get_items_permissions_check'],
                     'args' => $this->get_collection_params(),
                 ],
                 [
                     'methods' => WP_REST_Server::CREATABLE,
                     'callback' => [$this, 'create_item'],
-                    'permission_callback' =>  __return_true, // @todo [$this, 'create_item_permissions_check'],
+                    'permission_callback' => [$this, 'create_item_permissions_check'],
                     'args' => $this->get_endpoint_args_for_item_schema(WP_REST_Server::CREATABLE),
                 ],
                 'schema' => [$this, 'get_item_schema'],
@@ -34,7 +40,7 @@ class AbstractRestController extends WP_REST_Controller
 
         register_rest_route(
             $this->namespace,
-            '/' . $this->rest_base . '/(?P<id>[\w-]+)',
+            $this->rest_base . '/(?P<id>[\w-]+)',
             [
                 'args' => [
                     'id' => [
@@ -45,19 +51,19 @@ class AbstractRestController extends WP_REST_Controller
                 [
                     'methods' => WP_REST_Server::READABLE,
                     'callback' => [$this, 'get_item'],
-//                    'permission_callback' => [$this, 'get_item_permissions_check'],
-//                    'args' => $this->get_endpoint_args_for_item_schema(WP_REST_Server::READABLE),
+                    'permission_callback' => [$this, 'get_item_permissions_check'],
+                    'args' => $this->get_endpoint_args_for_item_schema(WP_REST_Server::READABLE),
                 ],
                 [
-                    'methods' => WP_REST_Server::EDITABLE,
+                    'methods' => 'PUT, PATCH',
                     'callback' => [$this, 'update_item'],
-                    'permission_callback' => __return_true, // @todo [$this, 'update_item_permissions_check'],
-                    'args' => $this->get_endpoint_args_for_item_schema(WP_REST_Server::EDITABLE),
+                    'permission_callback' => [$this, 'update_item_permissions_check'],
+                    'args' => $this->get_endpoint_args_for_item_schema('PUT, PATCH'),
                 ],
                 [
                     'methods' => WP_REST_Server::DELETABLE,
                     'callback' => [$this, 'delete_item'],
-                    'permission_callback' => __return_true, // @todo [$this, 'delete_item_permissions_check'],
+                    'permission_callback' => [$this, 'delete_item_permissions_check'],
                     'args' => $this->get_endpoint_args_for_item_schema(WP_REST_Server::DELETABLE),
                 ],
                 'schema' => [$this, 'get_item_schema'],
