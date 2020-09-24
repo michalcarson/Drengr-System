@@ -2,8 +2,8 @@
 
 namespace Drengr\Controller;
 
-use SodiumException;
 use WP_Error;
+use WP_HTTP_Response;
 use WP_REST_Controller;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -123,8 +123,8 @@ class AbstractRestController extends WP_REST_Controller
      * Set headers to let the Client Script be aware of the pagination.
      *
      * @param WP_REST_Response $response
-     * @param integer $total The number of found items
-     * @param integer $perPage The number of items per page
+     * @param int $total The number of found items
+     * @param int $perPage The number of items per page
      * @return WP_REST_Response $response
      */
     protected function addTotalHeaders(WP_REST_Response $response, int $total, int $perPage)
@@ -144,7 +144,7 @@ class AbstractRestController extends WP_REST_Controller
     /**
      * @param array $items
      * @param WP_REST_Request $request
-     * @return WP_Error|\WP_HTTP_Response|WP_REST_Response
+     * @return WP_Error|WP_HTTP_Response|WP_REST_Response
      */
     protected function buildResponse(array $items, WP_REST_Request $request)
     {
