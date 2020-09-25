@@ -1,2 +1,6 @@
 Framework/Router.php
 Exception/RouteException.php
+bin
+phpunit
+.travis.yml
+.phpcs.xml.dist
