@@ -4,7 +4,6 @@ use Drengr\App\Admin;
 use Drengr\App\Api;
 use Drengr\App\Client;
 use Drengr\Controller\AuthenticationController;
-use Drengr\Controller\GroupController;
 use Drengr\Controller\GroupRestController;
 use Drengr\Framework\Container;
 use Drengr\Framework\Database;
@@ -13,7 +12,6 @@ use Drengr\Framework\Option;
 use Drengr\Framework\Request;
 use Drengr\Framework\Validator;
 use Drengr\Repository\GroupRepository;
-use Drengr\Request\GroupRequest;
 use JetRouter\Router;
 
 return [
@@ -67,22 +65,9 @@ return [
         return new GroupRestController($repository);
     },
 
-    GroupController::class => function (Container $container) {
-        $request = $container->get(GroupRequest::class);
-        $repository = $container->get(GroupRepository::class);
-
-        return new GroupController($request, $repository);
-    },
-
     GroupRepository::class => function (Container $container) {
         $database = $container->get(Database::class);
         return new GroupRepository($database);
-    },
-
-    GroupRequest::class => function (Container $container) {
-        $validator = $container->get(Validator::class);
-        return (new GroupRequest($validator))
-            ->initialize();
     },
 
     ListingFactory::class => function (Container $container) {
