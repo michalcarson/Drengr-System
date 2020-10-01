@@ -5,6 +5,7 @@ use Drengr\App\Api;
 use Drengr\App\Client;
 use Drengr\Controller\AuthenticationController;
 use Drengr\Controller\GroupRestController;
+use Drengr\Framework\AuthenticationService;
 use Drengr\Framework\Container;
 use Drengr\Framework\Database;
 use Drengr\Framework\ListingFactory;
@@ -41,7 +42,12 @@ return [
 
     AuthenticationController::class => function (Container $container) {
         $request = $container->get(Request::class);
-        return new AuthenticationController('drengr/v1', $request);
+        $service = $container->get(AuthenticationService::class);
+        return new AuthenticationController('drengr/v1', $request, $service);
+    },
+
+    AuthenticationService::class => function (Container $container) {
+        return new AuthenticationService();
     },
 
     Database::class => function (Container $container) {

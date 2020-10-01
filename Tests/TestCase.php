@@ -11,15 +11,40 @@ use WP_UnitTestCase;
 
 class TestCase extends WP_UnitTestCase
 {
+    /** @var Container */
+    protected $container;
+    /** @var Config */
+    protected $config;
+    /** @var Application */
+    protected $application;
+
     public function setUp()
     {
         parent::setUp();
 
         Autoloader::initialize();
+
+        $this->container = new Container();
+        $this->config = new Config(dirname(__DIR__) . '/config');
+
         $this->application = new Application(
             ['page' => __FILE__], // todo: confirm this path works
-            new Config(dirname(__DIR__) . '/config'),
-            new Container()
+            $this->config,
+            $this->container
         );
+        $this->application->initialize();
+
+        $this->factory = self::factory();
+    }
+
+    /**
+     * Convenience routine to instantiate classes from the bindings.
+     *
+     * @param $name
+     * @return mixed
+     */
+    public function get($name)
+    {
+        return $this->container->get($name);
     }
 }
