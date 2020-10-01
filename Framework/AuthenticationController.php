@@ -96,7 +96,7 @@ class AuthenticationController extends WP_REST_Controller
 
         try {
             $token = $this->getTokenFromRequest($this->request);
-            $this->service->validateToken($token);
+            return $this->service->validateToken($token);
         } catch (\Exception $e) {
             // nop
         }
