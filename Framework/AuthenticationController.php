@@ -99,7 +99,6 @@ class AuthenticationController extends WP_REST_Controller
             $this->service->validateToken($token);
         } catch (\Exception $e) {
             // nop
-            echo $e->getMessage() . "\n";
         }
 
         return null;
