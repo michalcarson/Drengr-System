@@ -105,7 +105,10 @@ class AuthenticationController extends WP_REST_Controller
     }
 
     /**
-     * Extract the Bearer token from an Authentication header.
+     * Extract the Bearer token from an Authorization header.
+     *
+     * NB: Apache must be configured to allow the Authorization header.
+     *   SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
      *
      * @param Request $request
      * @return false|string
@@ -113,14 +116,14 @@ class AuthenticationController extends WP_REST_Controller
      */
     protected function getTokenFromRequest($request)
     {
-        $token = $request->header('Authentication');
-        if ($token && ! empty($token) && strtolower(substr($token, 0, 8)) === 'bearer: ') {
-            return substr($token, 8);
+        $token = $request->header('Authorization');
+        if ($token && ! empty($token) && strtolower(substr($token, 0, 7)) === 'bearer ') {
+            return substr($token, 7);
         }
 
         $token = $request->header('X-Auth');
-        if ($token && ! empty($token) && strtolower(substr($token, 0, 8)) === 'bearer: ') {
-            return substr($token, 8);
+        if ($token && ! empty($token) && strtolower(substr($token, 0, 7)) === 'bearer ') {
+            return substr($token, 7);
         }
 
         throw new Exception('could not find authentication header');
