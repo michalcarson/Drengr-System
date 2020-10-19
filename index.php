@@ -6,6 +6,7 @@ Author: Michal Carson
 Version: 0.0.1
 Requires PHP: 7.2.5
 */
+defined( 'ABSPATH' ) or die( 'Direct script access disallowed.' );
 
 /*
  * Set up our autoloader. Have to load this one file with a "require" but
