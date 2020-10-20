@@ -4,8 +4,11 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-console.log('drengr react app');
-const target = document.getElementById('drengr-root');
+let target = document.getElementById('drengr-root');
+if (process.env.NODE_ENV === 'development') {
+    target = document.getElementById('root');
+}
+
 if (target) {
     ReactDOM.render(
         <React.StrictMode>

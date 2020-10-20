@@ -1,5 +1,5 @@
 <?php
-defined('ABSPATH') or die('Direct script access diallowed.');
+defined('ABSPATH') or die('Direct script access disallowed.');
 
 add_action('init', function () {
 
@@ -41,5 +41,8 @@ add_action('init', function () {
                 }
             }
         }
+
+        // for material-ui
+        wp_enqueue_style('drengr-roboto', "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap");
     });
 });
