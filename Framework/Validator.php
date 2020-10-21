@@ -321,4 +321,29 @@ class Validator
 
         return true;
     }
+
+    public function sanitizeString($value)
+    {
+        return sanitize_text_field($value);
+    }
+
+    public function sanitizeEmail($value)
+    {
+        return sanitize_email($value);
+    }
+
+    public function sanitizeInteger($value)
+    {
+        return (int)$value;
+    }
+
+    public function sanitizeBoolean($value)
+    {
+        return (bool)$value;
+    }
+
+    public function sanitizeFloat($value)
+    {
+        return (float)$value;
+    }
 }
