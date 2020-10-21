@@ -6,16 +6,16 @@ import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
 import {makeStyles} from "@material-ui/core/styles";
 import MenuIcon from "@material-ui/icons/Menu";
+import MenuLink from "../MenuLink/MenuLink";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import React from "react";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import {AccountCircle, Group, Person} from "@material-ui/icons";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import GroupIcon from "@material-ui/icons/Group";
+import PersonIcon from "@material-ui/icons/Person";
 
 const drawerWidth = 240;
 
@@ -79,10 +79,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Menu() {
     const classes = useStyles();
+
     const [open, setOpen] = React.useState(false);
+
     const handleDrawerOpen = () => {
         setOpen(true);
     };
+
     const handleDrawerClose = () => {
         setOpen(false);
     };
@@ -125,28 +128,13 @@ export default function Menu() {
                 </div>
                 <Divider/>
                 <List>
-                        <ListItem button>
-                            <ListItemIcon>
-                                <AccountCircle />
-                            </ListItemIcon>
-                            <ListItemText primary="My Profile" />
-                        </ListItem>
-                        <ListItem button>
-                            <ListItemIcon>
-                                <Group />
-                            </ListItemIcon>
-                            <ListItemText primary="Groups" />
-                        </ListItem>
-                        <ListItem button>
-                            <ListItemIcon>
-                                <Person />
-                            </ListItemIcon>
-                            <ListItemText primary="Members" />
-                        </ListItem>
+                    <MenuLink primary={"My Profile"} to={"/edit-user-profile"} icon={<AccountCircleIcon/>}/>
+                    <MenuLink primary={"Groups"} to={"/groups"} icon={<GroupIcon/>} />
+                    <MenuLink primary={"Members"} to={"/members"} icon={<PersonIcon/>} />
                 </List>
             </Drawer>
 
-            <div className={classes.appBarSpacer} />
+            <div className={classes.appBarSpacer}/>
         </div>
     );
 }
