@@ -81,7 +81,7 @@ export default function SignIn() {
                     </Button>
                     <Grid container>
                         <Grid item xs>
-                            <Link href="https://vikingsna.org/edit-user-profile" variant="body2">
+                            <Link href="https://vikingsna.org/wp-login.php?action=lostpassword" variant="body2">
                                 Forgot password?
                             </Link>
                         </Grid>
