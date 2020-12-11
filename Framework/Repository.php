@@ -83,6 +83,22 @@ abstract class Repository
     }
 
     /**
+     * Return one row from the table matching all of the conditions
+     * in the $where array.
+     *
+     * @param array $where
+     * @return array|object|void|null
+     */
+    public function findBy(array $where)
+    {
+        return $this->database->queryOne(
+            $this->getAllSql(
+                $this->getWhereClause($where)
+            )
+        );
+    }
+
+    /**
      * Insert a row into the table.
      *
      * @param $data

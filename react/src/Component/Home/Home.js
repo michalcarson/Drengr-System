@@ -1,7 +1,7 @@
 import React from "react";
 import Container from "@material-ui/core/Container";
-import Typography from "@material-ui/core/Typography";
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
+import Member from "../Member/Member";
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -17,9 +17,7 @@ const Home = (props) => {
     return (
         <Container component="main" maxWidth="xs">
             <div className={classes.paper}>
-                <Typography component="h1" variant="h5">
-                    Home
-                </Typography>
+                <Member member={props.member} />
             </div>
         </Container>
     );

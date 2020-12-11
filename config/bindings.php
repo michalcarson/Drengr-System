@@ -115,7 +115,8 @@ return [
 
     MemberRestController::class => function (Container $container) {
         $repository = $container->get(MemberRepository::class);
-        return new MemberRestController($repository);
+        $service = $container->get(AuthenticationService::class);
+        return new MemberRestController($repository, $service);
     },
 
     MemberRepository::class => function (Container $container) {

@@ -5,7 +5,7 @@ return [
      * This will let the application know to update tables. Version is just a number.
      * No reason to do semver here.
      */
-    'version' => 3,
+    'version' => 4,
 
     'namespace' => 'drengr_',
 
@@ -41,6 +41,8 @@ return [
         'member' =>
             "CREATE TABLE {prefix}member (
                 id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+                wp_user_id bigint(20) UNSIGNED,
+                wp_user_validated tinyint(1) NOT NULL DEFAULT 0,
                 name varchar(255) NOT NULL,
                 viking_name varchar(255),
                 address text,
@@ -83,6 +85,28 @@ return [
                 id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
                 name varchar(50) NOT NULL,
                 PRIMARY KEY  (id)
+            ) {charset};",
+
+        'office' =>
+            "CREATE TABLE {prefix}office (
+                id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+                name varchar(50) NOT NULL,
+                PRIMARY KEY  (id)
+            ) {charset};",
+
+        'member_office' =>
+            "CREATE TABLE {prefix}member_office (
+                id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+                group_id int(11) UNSIGNED,
+                member_id int(11) UNSIGNED NOT NULL,
+                office_id int(11) UNSIGNED NOT NULL,
+                created_at datetime DEFAULT CURRENT_TIMESTAMP,
+                updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                deleted_at datetime,
+                PRIMARY KEY (id),
+                CONSTRAINT FOREIGN KEY member_office_group_fk (group_id) REFERENCES {prefix}group (id),
+                CONSTRAINT FOREIGN KEY member_office_member_fk (member_id) REFERENCES {prefix}member (id), 
+                CONSTRAINT FOREIGN KEY member_office_office_fk (office_id) REFERENCES {prefix}office (id) 
             ) {charset};",
 
         'group_member' =>
